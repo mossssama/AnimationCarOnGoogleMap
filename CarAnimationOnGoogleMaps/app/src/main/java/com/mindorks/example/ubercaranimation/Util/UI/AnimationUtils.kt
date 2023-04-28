@@ -1,4 +1,4 @@
-package com.mindorks.example.ubercaranimation.util
+package com.mindorks.example.ubercaranimation.Util.UI
 
 import android.animation.ValueAnimator
 import android.view.animation.LinearInterpolator
