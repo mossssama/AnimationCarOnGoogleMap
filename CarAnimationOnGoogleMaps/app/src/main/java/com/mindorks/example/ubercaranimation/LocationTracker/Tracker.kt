@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -12,17 +13,30 @@ import androidx.core.content.ContextCompat
 import com.example.trackuseryarabkotlin.BackGroundCurrentLocationTracker.LocationBroadcastReceiver
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
-class Tracking {
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
+import com.mindorks.example.ubercaranimation.MainActivity
+import com.mindorks.example.ubercaranimation.Util.Logic.MapUtils
+import com.mindorks.example.ubercaranimation.Util.Logic.PathUtils
+import com.mindorks.example.ubercaranimation.Util.UI.CameraUtils
+
+class Tracker {
 
     companion object {
 
         const val REQUEST_LOCATION_PERMISSION = 1                             // M Osama: constant for the permission req. code
 
         /* M Osama: returns lastTrackedLocation incase User granted permissions*/
-        fun getCurrentLocation(fusedLocationClient: FusedLocationProviderClient,context: Context) {
+        fun getCurrentLocation(fusedLocationClient: FusedLocationProviderClient,context: Context,googleMap: GoogleMap) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    location?.let { Toast.makeText(context, "Latitude: ${location.latitude}, Longitude: ${location.longitude}", Toast.LENGTH_SHORT).show() }
+                    val currentLatLng = LatLng(location!!.latitude,location.longitude)
+                    MainActivity.listOfActualPathNodes.add(currentLatLng)
+//                    MainActivity.listOfActualPathNodes.addAll(MainActivity.listOfActualPathNodes)
+                    MapUtils.moveCar(googleMap,context, currentLatLng)
+                    CameraUtils.moveCamera(googleMap,currentLatLng)
+                    PathUtils.showActualPath(googleMap, MainActivity.listOfActualPathNodes, Color.GREEN)
+                    location.let { Toast.makeText(context, "Latitude: ${location.latitude}, Longitude: ${location.longitude}", Toast.LENGTH_SHORT).show() }
                 }
             }
         }
@@ -46,7 +60,7 @@ class Tracking {
             /* M Osama: Every 10 seconds this object this object calls getCurrentLocation() ;*/
             val locationRunnable = object : Runnable {
                 override fun run() {
-                    getCurrentLocation(fusedLocationClient, context)
+                    getCurrentLocation(fusedLocationClient,context,MainActivity.googleMap)
                     handler.postDelayed(this, 10000)
                 }
             }

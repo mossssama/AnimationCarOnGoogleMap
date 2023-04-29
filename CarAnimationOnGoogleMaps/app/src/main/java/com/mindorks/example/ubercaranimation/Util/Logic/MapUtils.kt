@@ -4,7 +4,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.os.Handler
-import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -89,26 +88,40 @@ object MapUtils {
         }
     }
 
-    /* M Osama: used to show car movement on Map*/
-    fun showMovingCab(googleMap: GoogleMap,context: Context,cabLatLngList: ArrayList<LatLng>) {
+//    /* M Osama: used to show car movement on Map*/
+//    fun showMovingCab(googleMap: GoogleMap,context: Context,cabLatLngList: ArrayList<LatLng>) {
+//        handler = Handler()
+//        var index = 0
+//        runnable = Runnable {
+//            run {
+//                if (index < cabLatLngList.size) {
+//                    updateCarLocation(googleMap,context,cabLatLngList[index])
+//                    handler.postDelayed(runnable, 3000)
+//                    ++index
+//                } else {
+//                    handler.removeCallbacks(runnable)
+//                    Toast.makeText(context, "Trip Ends", Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        }
+//        handler.postDelayed(runnable, 5000)
+//    }
+
+    fun moveCar(googleMap: GoogleMap, context: Context, currentLocation: LatLng) {
         handler = Handler()
-        var index = 0
         runnable = Runnable {
             run {
-                if (index < getListOfLocations().size) {
-                    updateCarLocation(googleMap,context,cabLatLngList[index])
-                    handler.postDelayed(runnable, 3000)
-                    ++index
-                } else {
-                    handler.removeCallbacks(runnable)
-                    Toast.makeText(context, "Trip Ends", Toast.LENGTH_LONG).show()
-                }
+                    updateCarLocation(googleMap,context,currentLocation)
+                    handler.postDelayed(runnable, 20000)
+                    /* Incase we reached the destination call the following*/
+                    //  handler.removeCallbacks(runnable)
             }
         }
-        handler.postDelayed(runnable, 5000)
+        handler.postDelayed(runnable, 10000)
     }
 
 
+    /* M Osama: will be fed with nodes retrieved from our API */
     /* M Osama: locations used to build the path; each location is a vertex */
     fun getListOfLocations(): ArrayList<LatLng> {
         val locationList = ArrayList<LatLng>()
@@ -118,6 +131,6 @@ object MapUtils {
         locationList.add(LatLng(30.0154402, 31.2118712))        /* Destination */
         return locationList
     }
-    /* ToBeEdited*/
+
 
 }

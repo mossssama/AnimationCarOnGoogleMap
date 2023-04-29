@@ -9,7 +9,7 @@ class CameraUtils {
     companion object {
 
         /* M Osama: moves googleMaps Camera to passed LatLng */
-        private fun moveCamera(googleMap: GoogleMap,latLng: LatLng) { googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng)) }
+        fun moveCamera(googleMap: GoogleMap,latLng: LatLng) { googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng)) }
 
         /* M Osama: animate Camera transversing between location to another */
         fun animateCamera(googleMap: GoogleMap, latLng: LatLng) {

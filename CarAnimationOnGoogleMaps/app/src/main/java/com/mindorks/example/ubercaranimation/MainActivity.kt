@@ -1,13 +1,14 @@
 package com.mindorks.example.ubercaranimation
 
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.trackuseryarabkotlin.HelperFunctions.Tracking.Companion.REQUEST_LOCATION_PERMISSION
-import com.example.trackuseryarabkotlin.HelperFunctions.Tracking.Companion.checkPermissions
-import com.example.trackuseryarabkotlin.HelperFunctions.Tracking.Companion.requestLocationUpdates
+import com.example.trackuseryarabkotlin.HelperFunctions.Tracker.Companion.REQUEST_LOCATION_PERMISSION
+import com.example.trackuseryarabkotlin.HelperFunctions.Tracker.Companion.checkPermissions
+import com.example.trackuseryarabkotlin.HelperFunctions.Tracker.Companion.requestLocationUpdates
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -16,22 +17,23 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.mindorks.example.ubercaranimation.Util.UI.CameraUtils.Companion.showDefaultLocationOnMap
 import com.mindorks.example.ubercaranimation.Util.Logic.MapUtils
-import com.mindorks.example.ubercaranimation.Util.Logic.MapUtils.showMovingCab
-import com.mindorks.example.ubercaranimation.Util.Logic.PathUtils.Companion.showPath
+import com.mindorks.example.ubercaranimation.Util.Logic.PathUtils.Companion.showExpectedPath
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    companion object {
+        lateinit var googleMap: GoogleMap
+        var listOfActualPathNodes = ArrayList<LatLng>()
+    }
 
-    /* M Osama: variables for maps & car */
-    private lateinit var googleMap: GoogleMap
-    private lateinit var defaultLocation: LatLng
-
+    private lateinit var defaultLocation: LatLng                            /* M Osama: default location to move camera to */
     private lateinit var fusedLocationClient: FusedLocationProviderClient   // M Osama: used to return user location
     private lateinit var handler: Handler                                   // M Osama: handler that runs a timer
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+//        listOfActualPathNodes.add(LatLng(30.02735999999999,31.2559448)) /* M Osama: will be substituted with location taken from our API */
 
         /* M Osama: buildingMap for tracking user's location(Car) */
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -51,13 +53,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     /* M Osama: called once; only when the map is loaded on the screen */
     override fun onMapReady(googleMap: GoogleMap) {
-        this.googleMap = googleMap
+        MainActivity.googleMap = googleMap
         defaultLocation = LatLng(30.0444, 31.2357)
         showDefaultLocationOnMap(googleMap,defaultLocation)
 
-        Handler().postDelayed(Runnable {
-            showPath(googleMap, MapUtils.getListOfLocations())
-            showMovingCab(googleMap, applicationContext, MapUtils.getListOfLocations())
+        Handler().postDelayed({
+            showExpectedPath(googleMap, MapUtils.getListOfLocations(), Color.BLACK)
+//            showMovingCab(googleMap, applicationContext, listOfActualPathNodes)
         }, 3000)
     }
 
